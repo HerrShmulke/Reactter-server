@@ -46,6 +46,10 @@ export abstract class IMutation {
     abstract killAllSessions(): boolean | Promise<boolean>;
 }
 
+export abstract class ISubscription {
+    abstract postAdded(): Post | Promise<Post>;
+}
+
 export class Post {
     id: string;
     message: String250;

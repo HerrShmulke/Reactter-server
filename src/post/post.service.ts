@@ -22,6 +22,9 @@ export class PostService {
       relations: relations,
       take: take,
       skip: skip,
+      order: {
+        id: 'DESC',
+      },
     });
 
     return posts.map((post) => {

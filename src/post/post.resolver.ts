@@ -1,5 +1,5 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation, Subscription } from '@nestjs/graphql';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { IToken } from 'src/common/interfaces/token';
 import { PostCreateInput, PostAddLikeInput } from 'src/graphql';
@@ -8,6 +8,9 @@ import { TokenService } from 'src/token/token.service';
 import { Post } from './post.entity';
 import { Post as GraphPost } from 'src/graphql';
 import { PostService } from './post.service';
+import { PubSub } from 'apollo-server-express';
+
+const pubSub = new PubSub();
 
 @Resolver('Post')
 export class PostResolver {
@@ -66,10 +69,23 @@ export class PostResolver {
       if (args.message === '') return false;
 
       const token: IToken = this.tokenSerice.stringToAccessToken(strToken);
-      await this.postService.create(args, token.id);
+      const newPost = await this.postService.create(args, token.id);
+
+      const graphPost = (newPost as unknown) as GraphPost;
+
+      graphPost.commentsCount = 0;
+      graphPost.likesCount = 0;
+      graphPost.isLikes = false;
+
+      pubSub.publish('postAdded', { postAdded: graphPost });
       return true;
     } catch (error) {
       return false;
     }
+  }
+
+  @Subscription((returns) => GraphPost)
+  postAdded() {
+    return pubSub.asyncIterator('postAdded');
   }
 }

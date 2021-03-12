@@ -10,6 +10,10 @@ type Mutation {
   postAddLike(input: PostAddLikeInput!): Boolean!
 }
 
+type Subscription {
+  postAdded: Post!
+}
+
 type Post {
   id: ID!
   message: String250!
