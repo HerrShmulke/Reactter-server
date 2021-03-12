@@ -1,16 +1,18 @@
+scalar String250
+
 type Query {
   posts: [Post!]
   post(id: ID!): Post
 }
 
 type Mutation {
-  postCreate(input: PostCreateInput): Boolean!
-  postAddLike(input: PostAddLikeInput): Boolean!
+  postCreate(input: PostCreateInput!): Boolean!
+  postAddLike(input: PostAddLikeInput!): Boolean!
 }
 
 type Post {
   id: ID!
-  message: String!
+  message: String250!
   owner: User!
   mention: Post
   mentionBy: [Post]
@@ -22,6 +24,6 @@ input PostAddLikeInput {
 }
 
 input PostCreateInput {
-  message: String!
+  message: String250!
   mention: Int
 }

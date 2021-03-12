@@ -12,7 +12,7 @@ export class PostAddLikeInput {
 }
 
 export class PostCreateInput {
-    message: string;
+    message: String250;
     mention?: number;
 }
 
@@ -35,9 +35,9 @@ export abstract class IQuery {
 }
 
 export abstract class IMutation {
-    abstract postCreate(input?: PostCreateInput): boolean | Promise<boolean>;
+    abstract postCreate(input: PostCreateInput): boolean | Promise<boolean>;
 
-    abstract postAddLike(input?: PostAddLikeInput): boolean | Promise<boolean>;
+    abstract postAddLike(input: PostAddLikeInput): boolean | Promise<boolean>;
 
     abstract userRegister(input: UserRegisterInput): boolean | Promise<boolean>;
 
@@ -48,7 +48,7 @@ export abstract class IMutation {
 
 export class Post {
     id: string;
-    message: string;
+    message: String250;
     owner: User;
     mention?: Post;
     mentionBy?: Post[];
@@ -59,3 +59,5 @@ export class User {
     name: string;
     ownedPosts?: Post[];
 }
+
+export type String250 = any;

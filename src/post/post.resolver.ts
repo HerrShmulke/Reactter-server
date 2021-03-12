@@ -60,6 +60,8 @@ export class PostResolver {
     @Token() strToken: string,
   ): Promise<boolean> {
     try {
+      if (args.message === '') return false;
+
       const token: IToken = this.tokenSerice.stringToAccessToken(strToken);
       await this.postService.create(args, token.id);
       return true;
