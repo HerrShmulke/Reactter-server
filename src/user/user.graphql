@@ -12,6 +12,7 @@ type User {
   id: ID!
   name: String!
   ownedPosts: [Post!]
+  avatarUrl: String!
 }
 
 input UserRegisterInput {
