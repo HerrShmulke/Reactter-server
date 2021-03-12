@@ -4,6 +4,7 @@ import { PostCreateInput } from 'src/graphql';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
+import { Post as GraphPost } from 'src/graphql';
 
 @Injectable()
 export class PostService {
@@ -12,16 +13,39 @@ export class PostService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  findAll(relations: string[] = []): Promise<Post[]> {
-    return this.postRepository.find({
+  async findAll(
+    take: number,
+    skip: number,
+    relations: string[] = [],
+  ): Promise<GraphPost[]> {
+    const posts = await this.postRepository.find({
       relations: relations,
+      take: take,
+      skip: skip,
+    });
+
+    return posts.map((post) => {
+      const graphPost = (post as unknown) as GraphPost;
+
+      graphPost.commentsCount = post.mentionBy.length;
+      graphPost.likesCount = post.usersLikes.length;
+      graphPost.isLikes = false;
+
+      return graphPost;
     });
   }
 
-  findById(id: number, relations: string[] = []): Promise<Post> {
-    return this.postRepository.findOne(id, {
+  async findById(id: number, relations: string[] = []): Promise<GraphPost> {
+    const post = await this.postRepository.findOne(id, {
       relations: relations,
     });
+
+    const graphPost = (post as unknown) as GraphPost;
+
+    graphPost.likesCount = post.usersLikes.length;
+    graphPost.commentsCount = post.mentionBy.length;
+
+    return graphPost;
   }
 
   async addLike(userId: number, postId: number): Promise<void> {

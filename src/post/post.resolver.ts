@@ -18,8 +18,11 @@ export class PostResolver {
 
   @UseGuards(AuthGuard)
   @Query('posts')
-  async getPosts(): Promise<Post[]> {
-    const posts = await this.postService.findAll([
+  async getPosts(
+    @Args('take', ParseIntPipe) take: number,
+    @Args('skip', ParseIntPipe) skip: number,
+  ): Promise<GraphPost[]> {
+    const posts = await this.postService.findAll(take, skip, [
       'owner',
       'mention',
       'mentionBy',
@@ -31,7 +34,7 @@ export class PostResolver {
 
   @UseGuards(AuthGuard)
   @Query('post')
-  async getPostById(@Args('id', ParseIntPipe) id: number): Promise<Post> {
+  async getPostById(@Args('id', ParseIntPipe) id: number): Promise<GraphPost> {
     const post = this.postService.findById(id, [
       'owner',
       'mention',

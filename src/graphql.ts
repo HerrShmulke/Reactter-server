@@ -27,7 +27,7 @@ export class UserLoginInput {
 }
 
 export abstract class IQuery {
-    abstract posts(): Post[] | Promise<Post[]>;
+    abstract posts(take: number, skip: number): Post[] | Promise<Post[]>;
 
     abstract post(id: string): Post | Promise<Post>;
 
@@ -50,6 +50,9 @@ export class Post {
     id: string;
     message: String250;
     owner: User;
+    likesCount: number;
+    commentsCount: number;
+    isLikes: boolean;
     mention?: Post;
     mentionBy?: Post[];
 }
@@ -58,6 +61,7 @@ export class User {
     id: string;
     name: string;
     ownedPosts?: Post[];
+    avatarUrl: string;
 }
 
 export type String250 = any;
