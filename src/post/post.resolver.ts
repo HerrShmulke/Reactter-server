@@ -30,6 +30,7 @@ export class PostResolver {
       'mention',
       'mentionBy',
       'usersLikes',
+      'mention.owner',
     ]);
 
     return posts;
