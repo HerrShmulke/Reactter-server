@@ -29,7 +29,7 @@ export class UserLoginInput {
 export abstract class IQuery {
     abstract posts(take: number, skip: number): Post[] | Promise<Post[]>;
 
-    abstract post(id: string): Post | Promise<Post>;
+    abstract post(id: number): Post | Promise<Post>;
 
     abstract user(): User | Promise<User>;
 }
@@ -51,7 +51,7 @@ export abstract class ISubscription {
 }
 
 export class Post {
-    id: string;
+    id: number;
     message: String250;
     owner: User;
     likesCount: number;

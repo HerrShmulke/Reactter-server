@@ -2,7 +2,7 @@ scalar String250
 
 type Query {
   posts(take: Int!, skip: Int!): [Post!]
-  post(id: ID!): Post
+  post(id: Int!): Post
 }
 
 type Mutation {
@@ -15,7 +15,7 @@ type Subscription {
 }
 
 type Post {
-  id: ID!
+  id: Int!
   message: String250!
   owner: User!
   likesCount: Int!
