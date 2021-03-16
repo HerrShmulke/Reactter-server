@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
     const refreshToken: string = context.switchToHttp().args[2].req.cookies
       .refresh_token;
 
-    const accessToken = this.tokenService.stringToAccessToken(
+    const accessToken = this.tokenService.stringToAccessTokenAndVerify(
       stringAccessToken,
     );
 

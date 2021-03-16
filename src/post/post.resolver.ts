@@ -79,10 +79,6 @@ export class PostResolver {
       graphPost.commentsCount = 0;
       graphPost.likesCount = 0;
       graphPost.isLikes = false;
-      console.log(
-        '🚀 ~ file: post.resolver.ts ~ line 82 ~ PostResolver ~ graphPost',
-        graphPost,
-      );
 
       pubSub.publish('postAdded', { postAdded: graphPost });
       return true;

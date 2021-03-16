@@ -15,17 +15,21 @@ export class TokenService {
     private readonly tokenRepository: Repository<Token>,
   ) {}
 
-  /**
-   * Convert string to token.
-   * If the conversion failed, the function will return undefined.
-   * @param strToken Token as a string
-   */
-  stringToAccessToken(strToken: string): IToken | undefined {
+  stringToAccessTokenAndVerify(strToken: string): IToken | undefined {
     try {
       return jwt.verify(strToken, process.env.JWT_SECRET) as IToken;
     } catch {
       return undefined;
     }
+  }
+
+  /**
+   * Convert string to token.
+   * If the conversion failed, the function will return undefined.
+   * @param strToken Token as a string
+   */
+  stringToAccessToken(strToken: string): IToken {
+    return jwt.decode(strToken) as IToken;
   }
 
   /**

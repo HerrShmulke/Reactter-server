@@ -1,3 +1,3 @@
 export const COOKIE_REFRESH_TOKEN_MAX_AGE = 2.628e9;
 export const COOKIE_ACCESS_TOKEN_MAX_AGE = 2.628e9;
-export const ACCESS_TOKEN_MAX_AGE = '10m';
+export const ACCESS_TOKEN_MAX_AGE = '5m';
