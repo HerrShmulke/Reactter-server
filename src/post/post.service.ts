@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostCreateInput } from 'src/graphql';
+import { LikeAction, PostCreateInput } from 'src/graphql';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
@@ -17,6 +17,7 @@ export class PostService {
     take: number,
     skip: number,
     relations: string[] = [],
+    currentUserId?: number,
   ): Promise<GraphPost[]> {
     const posts = await this.postRepository.find({
       relations: relations,
@@ -32,7 +33,16 @@ export class PostService {
 
       graphPost.commentsCount = post.mentionBy.length;
       graphPost.likesCount = post.usersLikes.length;
-      graphPost.isLikes = false;
+
+      if (currentUserId) {
+        const foundLike = post.usersLikes.find(
+          (user) => user.id === currentUserId,
+        );
+
+        graphPost.isLikes = foundLike !== undefined;
+      } else {
+        graphPost.isLikes = false;
+      }
 
       return graphPost;
     });
@@ -51,14 +61,36 @@ export class PostService {
     return graphPost;
   }
 
-  async addLike(userId: number, postId: number): Promise<void> {
-    const post = await this.postRepository.findOne(postId);
+  async toggleLike(userId: number, postId: number): Promise<LikeAction> {
+    const post = await this.postRepository.findOne(postId, {
+      relations: ['usersLikes'],
+    });
+
     const owner = await this.userRepository.findOne(userId);
 
-    if (owner.postsLikes) owner.postsLikes.push(post);
-    else owner.postsLikes = [post];
+    let action: LikeAction = LikeAction.DISLIKE;
+    let foundLike: User = undefined;
 
-    this.userRepository.save(owner);
+    if (post.usersLikes) {
+      foundLike = post.usersLikes.find((user) => user.id === owner.id);
+
+      if (!foundLike) {
+        post.usersLikes.push(owner);
+        action = LikeAction.LIKE;
+      } else {
+        post.usersLikes = post.usersLikes.filter(
+          (user) => user.id !== owner.id,
+        );
+      }
+    } else {
+      post.usersLikes = [owner];
+
+      action = LikeAction.LIKE;
+    }
+
+    this.postRepository.save(post);
+
+    return action;
   }
 
   async create(post: PostCreateInput, ownerId: number): Promise<Post> {
@@ -68,7 +100,9 @@ export class PostService {
     newPost.owner = await this.userRepository.findOne(ownerId);
 
     if (post.mention)
-      newPost.mention = await this.postRepository.findOne(post.mention);
+      newPost.mention = await this.postRepository.findOne(post.mention, {
+        relations: ['mention.owner'],
+      });
 
     return this.postRepository.save(newPost);
   }

@@ -2,10 +2,9 @@ import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation, Subscription } from '@nestjs/graphql';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { IToken } from 'src/common/interfaces/token';
-import { PostCreateInput, PostAddLikeInput } from 'src/graphql';
+import { LikeAction, PostCreateInput } from 'src/graphql';
 import { Token } from 'src/token/token.decorator';
 import { TokenService } from 'src/token/token.service';
-import { Post } from './post.entity';
 import { Post as GraphPost } from 'src/graphql';
 import { PostService } from './post.service';
 import { PubSub } from 'apollo-server-express';
@@ -24,14 +23,15 @@ export class PostResolver {
   async getPosts(
     @Args('take', ParseIntPipe) take: number,
     @Args('skip', ParseIntPipe) skip: number,
+    @Token() strToken: string,
   ): Promise<GraphPost[]> {
-    const posts = await this.postService.findAll(take, skip, [
-      'owner',
-      'mention',
-      'mentionBy',
-      'usersLikes',
-      'mention.owner',
-    ]);
+    const token: IToken = this.tokenSerice.stringToAccessToken(strToken);
+    const posts = await this.postService.findAll(
+      take,
+      skip,
+      ['owner', 'mention', 'mentionBy', 'usersLikes', 'mention.owner'],
+      token.id,
+    );
 
     return posts;
   }
@@ -50,14 +50,16 @@ export class PostResolver {
   }
 
   @UseGuards(AuthGuard)
-  @Mutation('postAddLike')
-  async addLike(@Args('input') input: PostAddLikeInput): Promise<boolean> {
+  @Mutation('postToggleLike')
+  async toggleLike(
+    @Args('postId', ParseIntPipe) postId: number,
+    @Token() strToken: string,
+  ): Promise<LikeAction> {
     try {
-      await this.postService.addLike(input.userId, input.postId);
-      return true;
-    } catch (error) {
-      return false;
-    }
+      const token: IToken = this.tokenSerice.stringToAccessToken(strToken);
+
+      return this.postService.toggleLike(token.id, postId);
+    } catch {}
   }
 
   @UseGuards(AuthGuard)
@@ -77,6 +79,10 @@ export class PostResolver {
       graphPost.commentsCount = 0;
       graphPost.likesCount = 0;
       graphPost.isLikes = false;
+      console.log(
+        '🚀 ~ file: post.resolver.ts ~ line 82 ~ PostResolver ~ graphPost',
+        graphPost,
+      );
 
       pubSub.publish('postAdded', { postAdded: graphPost });
       return true;

@@ -7,7 +7,7 @@ type Query {
 
 type Mutation {
   postCreate(input: PostCreateInput!): Boolean!
-  postAddLike(input: PostAddLikeInput!): Boolean!
+  postToggleLike(postId: Int!): LikeAction!
 }
 
 type Subscription {
@@ -25,12 +25,12 @@ type Post {
   mentionBy: [Post]
 }
 
-input PostAddLikeInput {
-  postId: Int!
-  userId: Int!
-}
-
 input PostCreateInput {
   message: String250!
   mention: Int
+}
+
+enum LikeAction {
+  LIKE
+  DISLIKE
 }

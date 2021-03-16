@@ -6,9 +6,9 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export class PostAddLikeInput {
-    postId: number;
-    userId: number;
+export enum LikeAction {
+    LIKE = "LIKE",
+    DISLIKE = "DISLIKE"
 }
 
 export class PostCreateInput {
@@ -37,7 +37,7 @@ export abstract class IQuery {
 export abstract class IMutation {
     abstract postCreate(input: PostCreateInput): boolean | Promise<boolean>;
 
-    abstract postAddLike(input: PostAddLikeInput): boolean | Promise<boolean>;
+    abstract postToggleLike(postId: number): LikeAction | Promise<LikeAction>;
 
     abstract userRegister(input: UserRegisterInput): boolean | Promise<boolean>;
 
