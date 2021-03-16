@@ -25,8 +25,7 @@ export class User {
   @JoinTable()
   ownedPosts?: Post[];
 
-  @ManyToMany((type) => Post)
-  @JoinTable()
+  @ManyToMany((type) => Post, (post) => post.usersLikes)
   postsLikes?: Post[];
 
   @OneToMany((type) => Token, (token) => token.owner)
