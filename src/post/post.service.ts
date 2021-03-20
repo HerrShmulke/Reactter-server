@@ -99,10 +99,11 @@ export class PostService {
     newPost.message = post.message;
     newPost.owner = await this.userRepository.findOne(ownerId);
 
-    if (post.mention)
+    if (post.mention) {
       newPost.mention = await this.postRepository.findOne(post.mention, {
-        relations: ['mention.owner'],
+        relations: ['owner'],
       });
+    }
 
     return this.postRepository.save(newPost);
   }

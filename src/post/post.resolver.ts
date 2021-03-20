@@ -68,23 +68,19 @@ export class PostResolver {
     @Args('input') args: PostCreateInput,
     @Token() strToken: string,
   ): Promise<boolean> {
-    try {
-      if (args.message === '') return false;
+    if (args.message === '') return false;
 
-      const token: IToken = this.tokenSerice.stringToAccessToken(strToken);
-      const newPost = await this.postService.create(args, token.id);
+    const token: IToken = this.tokenSerice.stringToAccessToken(strToken);
+    const newPost = await this.postService.create(args, token.id);
 
-      const graphPost = (newPost as unknown) as GraphPost;
+    const graphPost = (newPost as unknown) as GraphPost;
 
-      graphPost.commentsCount = 0;
-      graphPost.likesCount = 0;
-      graphPost.isLikes = false;
+    graphPost.commentsCount = 0;
+    graphPost.likesCount = 0;
+    graphPost.isLikes = false;
 
-      pubSub.publish('postAdded', { postAdded: graphPost });
-      return true;
-    } catch (error) {
-      return false;
-    }
+    pubSub.publish('postAdded', { postAdded: graphPost });
+    return true;
   }
 
   @Subscription((returns) => GraphPost)
