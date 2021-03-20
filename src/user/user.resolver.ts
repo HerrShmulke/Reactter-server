@@ -71,11 +71,7 @@ export class UserResolver {
 
   @Mutation('userRegister')
   async createUser(@Args('input') args: UserRegisterInput): Promise<boolean> {
-    try {
-      await this.userService.create(args);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    await this.userService.create(args);
+    return true;
   }
 }

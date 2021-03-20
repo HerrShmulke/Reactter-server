@@ -15,11 +15,14 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, length: 30, unique: true })
   name!: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: '/avatar.png' })
   avatarUrl!: string;
+
+  @Column({ nullable: false, length: 150, unique: true })
+  email!: string;
 
   @OneToMany((type) => Post, (post) => post.owner)
   @JoinTable()

@@ -19,6 +19,7 @@ export class PostCreateInput {
 export class UserRegisterInput {
     name: string;
     password: string;
+    email: string;
 }
 
 export class UserLoginInput {

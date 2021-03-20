@@ -18,6 +18,7 @@ type User {
 input UserRegisterInput {
   name: String!
   password: String!
+  email: String!
 }
 
 input UserLoginInput {
